@@ -96,4 +96,11 @@ function World:get_objects()
     ))
 end
 
+function World:get_containers()
+    return List(tablex.filter(
+        tablex.values(self.entities),
+        function(entity) return entity.is_thing and entity.can_contain end
+    ))
+end
+
 return World

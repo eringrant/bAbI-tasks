@@ -7,13 +7,16 @@
 -- of patent rights can be found in the PATENTS file in the same directory.
 
 
+local dbg = require("debugger")
+dbg()
+
 local tablex = require 'pl.tablex'
 local utilities = require 'babi.utilities'
 
 BABI_HOME = os.getenv('BABI_HOME') or utilities.babi_home()
 
 local function generate(task_name, number, output, user_config)
-    local task = require('babi.tasks.' .. task_name)
+    local task = require("babi.tasks." .. task_name)  -- returns True is the module is not found
     local config = task.DEFAULT_CONFIG or {}
     config = tablex.merge(config, user_config, true)
 
@@ -50,7 +53,10 @@ local task_names = {
     [17]='PositionalReasoning',
     [18]='Size',
     [19]='PathFinding',
-    [20]='Motivations'
+    [20]='Motivations',
+    [21]='ActionsBeliefs',
+    [22]='BeliefsActions',
+    [23]='BeliefsActionsBeliefs',
 }
 
 local generate_arg = {

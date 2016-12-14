@@ -5,10 +5,18 @@
 -- LICENSE file in the root directory of this source tree. An additional grant
 -- of patent rights can be found in the PATENTS file in the same directory.
 
+-- Adapted from the original by Erin Grant (eringrant@berkeley.edu), 2016.
 
--- An action is only performed if the clause is true
--- is_valid and update_knowledge will be called regardless though and should
--- keep the truth value into account
+-- This source code defines actions in the simuated world.
+-- Actions should define three methods:
+--     is_valid: Check whether the actions is valid to execute.
+--     perform: Change the state of the world as a result of this action.
+--     update_knowledge: If the containing clause is True, update the state of 
+--         agent's knowledge as a result of this action.
+
+-- An action is only performed if the clause is true, but is_valid and 
+-- update_knowledge will be called regardless though and should take the truth 
+-- value into account.
 
 local Set = require 'pl.Set'
 local List = require 'pl.List'
@@ -109,6 +117,30 @@ do
                 -- We just don't know where the object is
                 knowledge[a1]:rawset('is_in', List())
             end
+        end
+    end
+end
+
+do
+    local Place = torch.class('babi.Place', 'babi.Action', babi)
+
+    -- a0: actor, a1: object, a2: destination
+    function Place:is_valid(world, a0, a1, a2)
+        if not (a1 and a0.is_actor and a1 and a1.is_thing and a2 and a2.can_contain) then
+            return false
+        end
+        return true
+    end
+
+    function Place:perform(world, a0, a1, s1)
+        a1.is_in = a2
+    end
+
+    function Place:update_knowledge(world, knowledge, clause, a0, a1, a2)
+        if clause.truth_value then
+	    knowledge[a1]:rawset(
+	        'is_in', a2, Set{clause}
+	    )
         end
     end
 end
@@ -259,6 +291,50 @@ do
 end
 
 do
+    local Enter = torch.class('babi.Enter', 'babi.Action', babi)
+
+    function Enter:is_valid(world, a0, a1)
+        if not (a0 and a0.is_actor and a0.is_god and a1 and a1.is_location) then
+            return false
+        else
+            return true
+        end
+    end
+
+    function Enter:perform(world, a0, a1)
+        a0.is_in = a1
+    end
+
+    function Enter:update_knowledge(world, knowledge, clause, a0, a1)
+        if clause.truth_value then
+            knowledge[a0]:set('is_in', a1, true, Set{clause})
+        end
+    end
+end
+
+do
+    local Exit = torch.class('babi.Exit', 'babi.Action', babi)
+
+    function Exit:is_valid(world, a0, a1)
+        if not (a0 and a0.is_actor and a0.is_god and a1 and a1.is_location) then
+            return false
+        else
+            return true
+        end
+    end
+
+    function Exit:perform(world, a0, a1)
+        a0.is_in = List()
+    end
+
+    function Exit:update_knowledge(world, knowledge, clause, a0, a1)
+        if clause.truth_value then
+            knowledge[a0]:rawset('is_in', List())
+        end
+    end
+end
+
+do
     local Give = torch.class('babi.Give', 'babi.Action', babi)
 
     function Give:is_valid(world, actor, object, recipient)
@@ -298,8 +374,82 @@ do
     end
 end
 
+do
+    local Search = torch.class('babi.Search', 'babi.Action', babi)
+
+    function Search:is_valid(world, actor, object, recipient)
+        return true
+    end
+
+    function Search:perform(world, actor, object, recipient)
+    end
+
+    function Search:update_knowledge(world, knowledge, clause,
+                                   actor, object, recipient)
+    end
+end
+
+do
+    local Transport = torch.class('babi.Transport', 'babi.Action', babi)
+
+    function Transport:is_valid(world, actor, object, origin, dest)
+        if object.is_in ~= origin.is_in then
+            return false
+        else
+            return true
+        end
+    end
+
+    function Transport:perform(world, actor, object, origin, dest)
+        object.is_in = dest
+    end
+
+    function Transport:update_knowledge(world, knowledge, clause,
+                                   actor, object, origin, dest)
+        knowledge[object]:set('is_in', dest, Set{clause})
+
+        local current_knowledge = {}
+        for _, entity in ipairs{actor, object} do
+            if knowledge[entity]['is_in'] then
+                current_knowledge[entity] =
+                    tablex.deepcopy(knowledge[entity]['is_in'])
+            else
+                current_knowledge[entity] = List()
+            end
+        end
+
+    end
+end
+
+do
+    local Believe = torch.class('babi.Believe', 'babi.Action', babi)
+
+    function Believe:is_valid(world, actor, proposition)
+        return true
+    end
+
+    function Believe:perform(world, actor, proposition)
+    end
+
+    function Believe:update_knowledge(world, knowledge, clause,
+                                   actor, proposition)
+    end
+end
+
+
 return {
-    get=babi.Get, drop=babi.Drop, give=babi.Give, teleport=babi.Teleport,
-    create=babi.Create, set=babi.SetProperty, set_dir=babi.SetDir,
-    set_pos=babi.SetPos
+    get=babi.Get,
+    drop=babi.Drop, 
+    give=babi.Give, 
+    teleport=babi.Teleport,
+    create=babi.Create,
+    set=babi.SetProperty,
+    set_dir=babi.SetDir,
+    set_pos=babi.SetPos,
+    search=babi.Search,
+    place=babi.Place,
+    enter=babi.Enter,
+    exit=babi.Exit,
+    transport=babi.Transport,
+    believe=babi.Believe,
 }

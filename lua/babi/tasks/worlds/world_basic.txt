@@ -1,5 +1,9 @@
 # locations
 
+create lounge
+set lounge is_thing
+set lounge is_location
+
 create bedroom
 set bedroom is_thing
 set bedroom is_location
@@ -26,6 +30,11 @@ set office is_location
 
 # small (moveable) objects
 
+create orange
+set orange is_thing
+set orange is_gettable
+set orange is_in kitchen
+
 create apple
 set apple is_thing
 set apple is_gettable
@@ -41,11 +50,68 @@ set milk is_thing
 set milk is_gettable
 set milk is_in kitchen
 
+create marble
+set marble is_thing
+set marble is_gettable
+set marble is_in kitchen
+
+create vase
+set vase is_thing
+set vase is_gettable
+set vase is_in kitchen
+
+create fork
+set fork is_thing
+set fork is_gettable
+set fork is_in kitchen
+
+create chair
+set chair is_thing
+set chair is_gettable
+set chair is_in kitchen
+
+create lamp
+set lamp is_thing
+set lamp is_gettable
+set lamp is_in kitchen
+
+create hairpin
+set hairpin is_thing
+set hairpin is_gettable
+set hairpin is_in kitchen
+
+create television
+set television is_thing
+set television is_gettable
+set television is_in kitchen
+
 # objects
 
 create table
 set table is_thing
 set table is_in kitchen
+
+# containers
+
+create box
+set box is_thing
+set box can_contain
+
+create pantry
+set pantry is_thing
+set pantry can_contain
+
+create envelope
+set envelope is_thing
+set envelope can_contain
+
+create drawer
+set drawer is_thing
+set drawer can_contain
+
+create cupboard
+set cupboard is_thing
+set cupboard can_contain
 
 # actors
 create John
@@ -66,8 +132,19 @@ set Sandra is_in garden
 set Sandra is_god
 set Sandra is_female
 
+create Anne
+set Anne is_actor
+set Anne is_god
+
 create Daniel
 set Daniel is_actor
 set Daniel is_in hallway
 set Daniel is_god
-set Daniel is_male
+
+create Sally
+set Sally is_actor
+set Sally is_god
+
+create Kate
+set Kate is_actor
+set Kate is_god

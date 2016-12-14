@@ -288,6 +288,50 @@ do
 end
 
 do
+    local SimpleExit, parent =
+        torch.class('SimpleExit', 'Simple', templates)
+
+    function SimpleExit:__init(...)
+        parent.__init(self, ...)
+    end
+
+    function SimpleExit:is_valid()
+        if torch.isTypeOf(self:clause().action, 'babi.Exit') then
+            return true
+        end
+    end
+
+    function SimpleExit:render()
+        local actor = self:clause().actor
+        local dest = unpack(self:clause().args)
+        local template = '%s exited the %s.'
+        return {template:format(actor.name, dest.name)}
+    end
+end
+
+do
+    local SimpleEnter, parent =
+        torch.class('SimpleEnter', 'Simple', templates)
+
+    function SimpleEnter:__init(...)
+        parent.__init(self, ...)
+    end
+
+    function SimpleEnter:is_valid()
+        if torch.isTypeOf(self:clause().action, 'babi.Enter') then
+            return true
+        end
+    end
+
+    function SimpleEnter:render()
+        local actor = self:clause().actor
+        local dest = unpack(self:clause().args)
+        local template = '%s entered the %s.'
+        return {template:format(actor.name, dest.name)}
+    end
+end
+
+do
     local SimpleTeleport, parent =
         torch.class('SimpleTeleport', 'Simple', templates)
 
@@ -1339,6 +1383,60 @@ do
 end
 
 do
+    local SimpleBelieveLocation, parent = torch.class('SimpleBelieveLocation', 'Simple', templates)
+
+    function SimpleBelieveLocation:__init(...)
+        parent.__init(self, ...)
+    end
+
+    function SimpleBelieveLocation:is_valid()
+        if torch.isTypeOf(self:clause().action, 'babi.BelieveLocation') then
+            return true
+        end
+    end
+
+    function SimpleBelieveLocation:render()
+        local actor = self:clause().actor
+        local object, location = unpack(self:clause().args)
+        local tmpl1 = ('%s believes the %s is in the %s'):format(
+            actor.name, object.name, location.name
+        )
+        local tmpl2 = ('%s thinks the %s is in the %s'):format(
+            actor.name, object.name, location.name
+        )
+        return {tmpl1, tmpl2}
+    end
+end
+
+do
+    local EvalBelieveLocation, parent = torch.class('EvalBelieveLocation', 'Template', templates)
+
+    function EvalBelieveLocation:__init(...)
+        parent.__init(self, ...)
+    end
+
+    EvalBelieveLocation.clauses = 1
+
+    function EvalBelieveLocation:is_valid()
+        return torch.isTypeOf(self:clause(), 'babi.Question') and
+            torch.isTypeOf(self:clause().args.action, 'babi.BelieveLocation')
+    end
+
+    function EvalBelieveLocation:render()
+        local actor = self:clause().args.actor
+        local object, location = unpack(self:clause().args.args)
+        local tmpl1 = ('where does %s believe the %s is?\t%s'):format(
+            actor.name, object.name, location.name
+        )
+        local tmpl2 = ('where does %s think the %s is?\t%s'):format(
+            actor.name, object.name, location.name
+        )
+        return {tmpl1, tmpl2}
+    end
+
+end
+
+do
     local SimpleGive, parent = torch.class('SimpleGive', 'Simple', templates)
 
     function SimpleGive:__init(...)
@@ -1356,6 +1454,48 @@ do
         local object, recipient = unpack(self:clause().args)
         local template = '%s gave %s the %s'
         return {template:format(actor.name, recipient.name, object.name)}
+    end
+end
+
+do
+    local SimplePlace, parent = torch.class('SimplePlace', 'Simple', templates)
+
+    function SimplePlace:__init(...)
+        parent.__init(self, ...)
+    end
+
+    function SimplePlace:is_valid()
+        if torch.isTypeOf(self:clause().action, 'babi.Place') then
+            return true
+        end
+    end
+
+    function SimplePlace:render()
+        local actor = self:clause().actor
+        local object, dest = unpack(self:clause().args)
+        local template = '%s placed the %s in the %s'
+        return {template:format(actor.name, object.name, dest.name)}
+    end
+end
+
+do
+    local SimpleTransport, parent = torch.class('SimpleTransport', 'Simple', templates)
+
+    function SimpleTransport:__init(...)
+        parent.__init(self, ...)
+    end
+
+    function SimpleTransport:is_valid()
+        if torch.isTypeOf(self:clause().action, 'babi.Transport') then
+            return true
+        end
+    end
+
+    function SimpleTransport:render()
+        local actor = self:clause().actor
+        local object, origin, dest = unpack(self:clause().args)
+        local template = '%s moved the %s from the %s to the %s'
+        return {template:format(actor.name, object.name, origin.name, dest.name)}
     end
 end
 
@@ -1380,6 +1520,39 @@ do
         return {('%s is either in the %s or in the %s'):format(
             self:clause().actor.name, locations[1].name, locations[2].name
         )}
+    end
+end
+
+do
+    local EvalSearch, parent = torch.class('EvalSearch', 'Template', templates)
+
+    function EvalSearch:__init(...)
+        parent.__init(self, ...)
+    end
+
+    EvalSearch.clauses = 1
+
+    function EvalSearch:is_valid()
+        return torch.isTypeOf(self:clause(), 'babi.Question') and
+            torch.isTypeOf(self:clause().args.action, 'babi.Search')
+    end
+
+    function EvalSearch:render()
+        local actor = self:clause().args.actor
+        local object, location = unpack(self:clause().args.args)
+        local tmpl1 = ('where did %s search for the %s?\t%s'):format(
+            actor.name, object.name, location.name
+        )
+        return {tmpl1}
+    end
+
+    function EvalSearch:render_symbolic()
+        local actor = self:clause().args.actor
+        local object, recipient = unpack(self:clause().args.args)
+        local tmpl1 = ('%s search_where %s\t%s'):format(
+            actor.name, object.name, location.name
+        )
+        return {tmpl1}
     end
 end
 
@@ -1486,6 +1659,29 @@ do
         )
     end
 end
+
+do
+    local SimpleSearch, parent = torch.class('SimpleSearch', 'Simple', templates)
+
+    function SimpleSearch:__init(...)
+        parent.__init(self, ...)
+    end
+
+    function SimpleSearch:is_valid()
+        if torch.isTypeOf(self:clause().action, 'babi.Search') and
+                not self:clause().args[2] then
+            return true
+        end
+    end
+
+    function SimpleSearch:render()
+        local actor = self:clause().actor
+        local object, location = unpack(self:clause().args)
+        local template = '%s searched for the %s in the %s'
+        return {template:format(actor.name, object.name, recipient.name)}
+    end
+end
+
 
 -- local templates = Set{
 --     BeforeIsIn,
