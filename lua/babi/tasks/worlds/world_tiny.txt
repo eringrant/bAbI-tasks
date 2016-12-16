@@ -1,0 +1,87 @@
+# locations
+
+create master_bedroom
+set master_bedroom is_thing
+set master_bedroom is_location
+
+create living_room
+set living_room is_thing
+set living_room is_location
+
+create hallway
+set hallway is_thing
+set hallway is_location
+
+create den
+set den is_thing
+set den is_location
+
+create patio
+set patio is_thing
+set patio is_location
+
+# objects
+
+create grapes
+set grapes is_thing
+set grapes is_gettable
+
+create peach
+set peach is_thing
+set peach is_gettable
+
+create asparagus
+set asparagus is_thing
+set asparagus is_gettable
+
+create peas
+set peas is_thing
+set peas is_gettable
+
+create pear
+set pear is_thing
+set pear is_gettable
+
+# containers
+
+create red_box
+set red_box is_thing
+set red_box is_container
+
+create red_bathtub
+set red_bathtub is_thing
+set red_bathtub is_container
+
+create blue_envelope
+set blue_envelope is_thing
+set blue_envelope is_container
+
+create green_pantry
+set green_pantry is_thing
+set green_pantry is_container
+
+create blue_bucket
+set blue_bucket is_thing
+set blue_bucket is_container
+
+# actors
+
+create Isla
+set Isla is_actor
+set Isla is_god
+
+create Jack
+set Jack is_actor
+set Jack is_god
+
+create Noah
+set Noah is_actor
+set Noah is_god
+
+create Olivia
+set Olivia is_actor
+set Olivia is_god
+
+create Nathan
+set Nathan is_actor
+set Nathan is_god
