@@ -101,7 +101,7 @@ function BeliefsActionsBeliefs:generate_story(world, knowledge, story)
         story:extend(clauses)
 
 	if enter_exit then
-            -- question: where does person A seach for the item?
+            -- question: where does person A search for the item?
             story:append(babi.Question(
                 'eval',
                 babi.Clause(
@@ -115,7 +115,7 @@ function BeliefsActionsBeliefs:generate_story(world, knowledge, story)
                 Set{clauses}
             ))
 	else
-            -- question: where does person A seach for the item?
+            -- question: where does person A search for the item?
             story:append(babi.Question(
                 'eval',
                 babi.Clause(
