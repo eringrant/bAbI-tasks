@@ -53,6 +53,46 @@ function BeliefsActions:generate_story(world, knowledge, story)
             )
         )
 
+    if enter_exit then
+
+	    -- person A believes a false state of affairs
+	    clauses:append(
+	        babi.Clause(
+	    	    world, 
+	    	    true, 
+	    	    random_actors[1],
+	    	    actions.believe,
+	            babi.Clause(
+                    world, 
+                    false, 
+                    random_object,
+                    states.occupy,
+                    random_containers[1]
+                )
+	        )
+	    )
+
+	else
+
+	    -- person A believes a true state of affairs
+	    clauses:append(
+	        babi.Clause(
+    	    	world, 
+    	    	true, 
+    	    	random_actors[1],
+	    	    actions.believe,
+	            babi.Clause(
+                    world, 
+                    false, 
+                    random_object,
+                    states.occupy,
+                    random_containers[2]
+                )
+	        )
+	    )
+
+    end
+
 	if enter_exit then
 
             -- person A exits the location
@@ -92,42 +132,6 @@ function BeliefsActions:generate_story(world, knowledge, story)
                      random_location
                  )
              )
-
-	    -- person A believes a false state of affairs
-	    clauses:append(
-	        babi.Clause(
-	    	    world, 
-	    	    true, 
-	    	    random_actors[1],
-	    	    actions.believe,
-	            babi.Clause(
-                    world, 
-                    false, 
-                    random_object,
-                    states.occupy,
-                    random_containers[1]
-                )
-	        )
-	    )
-
-	else
-
-	    -- person A believes a true state of affairs
-	    clauses:append(
-	        babi.Clause(
-    	    	world, 
-    	    	true, 
-    	    	random_actors[1],
-	    	    actions.believe,
-	            babi.Clause(
-                    world, 
-                    false, 
-                    random_object,
-                    states.occupy,
-                    random_containers[2]
-                )
-	        )
-	    )
 
 	end
 
